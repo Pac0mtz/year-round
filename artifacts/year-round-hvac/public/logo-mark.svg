@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="Year Round">
+  <rect width="64" height="64" fill="#1b2a4a"/>
+  <circle cx="32" cy="32" r="28" fill="#1b2a4a"/>
+  <!-- Left cool arc -->
+  <path d="M32 6a26 26 0 0 0 0 52" stroke="#7eb8e8" stroke-width="3.5" fill="none"/>
+  <!-- Right heat arc -->
+  <path d="M32 6a26 26 0 0 1 0 52" stroke="#b7202f" stroke-width="3.5" fill="none"/>
+  <!-- Divider -->
+  <path d="M32 10v44" stroke="#1b2a4a" stroke-width="3"/>
+  <!-- Snowflake -->
+  <g stroke="#7eb8e8" stroke-width="2.2" stroke-linecap="round">
+    <path d="M22 20v16M14 28h16"/>
+    <path d="M16.5 22.5l11 11M16.5 33.5l11-11"/>
+  </g>
+  <!-- Flame -->
+  <path d="M42 42c0-6 4.5-9.5 4.5-15 3.5 3.5 6.5 8 6.5 13.5 0 5.5-3 9.5-6.5 9.5S42 45.5 42 42z" fill="#b7202f"/>
+  <path d="M45 39c0-3.5 1.8-5.5 1.8-8.5 1.8 1.8 3.7 4.2 3.7 7 0 2.8-1.4 4.8-2.8 4.8S45 40.5 45 39z" fill="#ff8d97"/>
+</svg>

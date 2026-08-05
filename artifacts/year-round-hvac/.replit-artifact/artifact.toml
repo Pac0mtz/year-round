@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Year Round HVAC"
+description = "A bilingual (English/Spanish) HVAC company website for Year Round HVAC serving Bolingbrook, IL. Showcases heating, cooling, electrical, and water heater services with booking, reviews, tips, and emergency contact features."
+version = "1.0.0"
+id = "artifacts/year-round-hvac"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24615
+
+[services.development]
+run = "pnpm --filter @workspace/year-round-hvac run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/year-round-hvac", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/year-round-hvac/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24615"
+BASE_PATH = "/"
