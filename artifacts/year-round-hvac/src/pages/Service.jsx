@@ -34,11 +34,8 @@ export default function Service({ service, onOpenBooking, onNavigate }) {
     return relatedSvc?.image || service.image
   }, [service.id, service.image, services])
 
-  const bookSub = (sub) => {
-    onOpenBooking({
-      service: service.label,
-      message: `${sub.title}${sub.desc ? ` — ${sub.desc}` : ''}`,
-    })
+  const bookSub = () => {
+    onOpenBooking()
   }
 
   return (

@@ -117,6 +117,15 @@ export const ui = {
       removePhoto: 'Remove',
       submit: 'Request Service',
     },
+    thankYou: {
+      headline: 'Request received',
+      headlineNamed: 'Thanks, {name}!',
+      sub: 'We got your request and will call shortly to confirm a time.',
+      subNamed: 'We got your request and will call you at {phone} shortly to confirm a time.',
+      call: 'Call {phone}',
+      home: 'Back to home',
+      review: 'Leave a Google review →',
+    },
     service: {
       schedule: 'Schedule {label}',
       whenToCall: 'When to call',
@@ -296,6 +305,15 @@ export const ui = {
       photosCta: 'Suelte fotos aquí o haga clic para subir',
       removePhoto: 'Quitar',
       submit: 'Solicitar servicio',
+    },
+    thankYou: {
+      headline: 'Solicitud recibida',
+      headlineNamed: '¡Gracias, {name}!',
+      sub: 'Recibimos su solicitud y le hablamos en breve para confirmar la hora.',
+      subNamed: 'Recibimos su solicitud y le hablamos al {phone} en breve para confirmar la hora.',
+      call: 'Llamar al {phone}',
+      home: 'Volver al inicio',
+      review: 'Dejar reseña en Google →',
     },
     service: {
       schedule: 'Agendar {label}',

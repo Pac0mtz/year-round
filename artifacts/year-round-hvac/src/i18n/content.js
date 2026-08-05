@@ -876,6 +876,10 @@ const seoMapEs = {
     'Contáctenos | Year Round Heating and Air Conditioning Inc',
     'Agende servicio HVAC en los suburbios de Chicagoland hasta 50 millas. Llame al (708) 710-8134 o escriba a yearroundhac@gmail.com.',
   ],
+  'thank-you': [
+    'Gracias | Year Round Heating and Air Conditioning Inc',
+    'Recibimos su solicitud de servicio y le hablamos en breve para confirmar la hora.',
+  ],
 }
 
 function withSubIcons(subs) {

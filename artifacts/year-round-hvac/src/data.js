@@ -51,9 +51,10 @@ export function pageFromPath(pathname, servicesList = []) {
   if (serviceMatch && servicesList.some((s) => s.id === serviceMatch[1])) {
     return serviceMatch[1]
   }
-  const staticPages = ['about', 'reviews', 'tips', 'contact']
+  const staticPages = ['about', 'reviews', 'tips', 'contact', 'thank-you']
   const slug = path.slice(1)
   if (staticPages.includes(slug)) return slug
+  if (slug === 'thankyou') return 'thank-you'
   if (servicesList.some((s) => s.id === slug)) return slug
   return 'home'
 }
@@ -543,5 +544,9 @@ export const seoMap = {
   contact: [
     'Contact Us | Year Round Heating and Air Conditioning Inc',
     'Schedule HVAC service across Chicagoland suburbs within 50 miles. Call (708) 710-8134 or email yearroundhac@gmail.com.',
+  ],
+  'thank-you': [
+    'Thank You | Year Round Heating and Air Conditioning Inc',
+    'We received your service request and will call shortly to confirm a time.',
   ],
 }

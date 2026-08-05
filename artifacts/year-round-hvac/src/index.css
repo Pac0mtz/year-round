@@ -1949,7 +1949,8 @@ textarea {
   transform: translateY(1px);
 }
 
-.quote-modal-backdrop {
+.quote-modal-backdrop,
+.quote-modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(21, 31, 51, 0.6);
@@ -1971,6 +1972,15 @@ textarea {
   padding: 32px;
   animation: fadeIn 0.22s ease;
   position: relative;
+}
+
+.quote-modal--embed {
+  max-width: 540px;
+  padding: 28px 22px 22px;
+}
+
+.quote-embed {
+  width: 100%;
 }
 
 .quote-modal__close {
@@ -2165,5 +2175,140 @@ textarea {
 .lang-gate__btn--es:hover,
 .lang-gate__btn--es:focus-visible {
   background: #f3f5f9;
+}
+
+/* Thank you page */
+.thank {
+  position: relative;
+  min-height: min(88vh, 760px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 72px 24px 88px;
+  overflow: hidden;
+  background:
+    linear-gradient(165deg, #152238 0%, #1b2a4a 48%, #121a2c 100%);
+}
+
+.thank__glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 18%, rgba(183, 32, 47, 0.28), transparent 58%),
+    radial-gradient(ellipse 55% 40% at 85% 85%, rgba(255, 255, 255, 0.06), transparent 55%);
+}
+
+.thank__inner {
+  position: relative;
+  z-index: 1;
+  width: min(520px, 100%);
+  text-align: center;
+  animation: fadeUp 0.55s ease both;
+}
+
+.thank__logo {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 3px solid #b7202f;
+  object-fit: cover;
+  background: #1b2a4a;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  margin-bottom: 18px;
+}
+
+.thank__check {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: #b7202f;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  animation: fadeIn 0.45s ease 0.15s both;
+}
+
+.thank__brand {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(34px, 6vw, 46px);
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
+  line-height: 1.05;
+}
+
+.thank__tag {
+  margin: 8px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #e8b3ba;
+}
+
+.thank__headline {
+  margin: 28px 0 0;
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(24px, 4vw, 30px);
+  font-weight: 600;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+}
+
+.thank__sub {
+  margin: 14px auto 0;
+  max-width: 420px;
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.thank__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 28px;
+}
+
+.thank__review {
+  display: inline-block;
+  margin-top: 22px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #e8b3ba;
+  transition: color 0.2s ease;
+}
+
+.thank__review:hover {
+  color: #fff;
+}
+
+@media (max-width: 560px) {
+  .thank {
+    padding: 56px 18px 72px;
+    min-height: min(82vh, 680px);
+  }
+
+  .thank__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .thank__actions .svc-btn {
+    text-align: center;
+  }
 }
 

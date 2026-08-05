@@ -9,20 +9,10 @@ import Service from './pages/Service'
 import Reviews from './pages/Reviews'
 import Tips from './pages/Tips'
 import Contact from './pages/Contact'
+import ThankYou from './pages/ThankYou'
 import { COMPANY_NAME, PHONE, PHONE_TEL, pageFromPath, pathForPage } from './data'
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext'
 import LanguageGate from './components/LanguageGate'
-
-const emptyForm = {
-  name: '',
-  phone: '',
-  email: '',
-  address: '',
-  service: '',
-  date: '',
-  message: '',
-  photos: [],
-}
 
 function AppShell() {
   const { t, content, lang } = useLanguage()
@@ -36,12 +26,10 @@ function AppShell() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
   const [bookingOpen, setBookingOpen] = useState(false)
-  const [bookingDone, setBookingDone] = useState(false)
-  const [bookingDoneInline, setBookingDoneInline] = useState(false)
-  const [form, setForm] = useState(emptyForm)
   const [emergencyEnabled] = useState(true)
 
   const currentService = services.find((s) => s.id === page)
+  const openBooking = () => setBookingOpen(true)
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 880)
@@ -76,20 +64,6 @@ function AppShell() {
     setMobileOpen(false)
     setServicesOpen(false)
     window.scrollTo(0, 0)
-  }
-
-  const updateForm = (key, value) => {
-    setForm((prev) => ({ ...prev, [key]: value }))
-  }
-
-  const submitBooking = (e) => {
-    e.preventDefault()
-    if (!form.service) {
-      window.alert(lang === 'es' ? 'Seleccione un servicio.' : 'Please select a service.')
-      return
-    }
-    if (page === 'contact') setBookingDoneInline(true)
-    else setBookingDone(true)
   }
 
   return (
@@ -140,61 +114,24 @@ function AppShell() {
         onNavigate={navigate}
         onToggleServices={() => setServicesOpen((v) => !v)}
         onToggleMobile={() => setMobileOpen((v) => !v)}
-        onOpenBooking={() => {
-          setBookingOpen(true)
-          setBookingDone(false)
-        }}
+        onOpenBooking={openBooking}
       />
 
       <main key={`${page}-${lang}`} style={{ animation: 'fadeUp 0.5s ease both' }}>
-        {page === 'home' && (
-          <Home
-            onNavigate={navigate}
-            onOpenBooking={() => {
-              setBookingOpen(true)
-              setBookingDone(false)
-            }}
-          />
-        )}
+        {page === 'home' && <Home onNavigate={navigate} onOpenBooking={openBooking} />}
         {page === 'about' && <About />}
         {currentService && (
-          <Service
-            service={currentService}
-            onNavigate={navigate}
-            onOpenBooking={(opts = {}) => {
-              setBookingDone(false)
-              setForm((prev) => ({
-                ...prev,
-                service: opts.service || prev.service || currentService.label,
-                message: opts.message != null ? opts.message : prev.message,
-              }))
-              setBookingOpen(true)
-            }}
-          />
+          <Service service={currentService} onNavigate={navigate} onOpenBooking={openBooking} />
         )}
         {page === 'reviews' && <Reviews />}
         {page === 'tips' && <Tips />}
-        {page === 'contact' && (
-          <Contact
-            form={form}
-            onChange={updateForm}
-            bookingDone={bookingDoneInline}
-            onSubmit={submitBooking}
-          />
-        )}
+        {page === 'contact' && <Contact />}
+        {page === 'thank-you' && <ThankYou onNavigate={navigate} />}
       </main>
 
       <Footer onNavigate={navigate} />
 
-      {bookingOpen && (
-        <BookingModal
-          form={form}
-          done={bookingDone}
-          onChange={updateForm}
-          onSubmit={submitBooking}
-          onClose={() => setBookingOpen(false)}
-        />
-      )}
+      {bookingOpen && <BookingModal onClose={() => setBookingOpen(false)} />}
     </div>
   )
 }
