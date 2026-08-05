@@ -164,7 +164,7 @@ export default function Contact() {
             <p style={{ fontSize: 13.5, color: '#4a5468', margin: '0 0 18px', lineHeight: 1.5 }}>
               {t('booking.requestSub')}
             </p>
-            <QuoteEmbed title={t('contact.request')} maxWidth="100%" />
+            <QuoteEmbed title={t('contact.request')} />
           </div>
         </div>
 

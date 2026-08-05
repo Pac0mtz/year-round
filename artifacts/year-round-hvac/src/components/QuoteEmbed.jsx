@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 
-export const QUOTE_EMBED_ORIGIN =
-  'https://ef5df434-65a1-4e4d-af8a-67318b01c811-00-38k1p93kvqm6t.worf.replit.dev'
-export const QUOTE_EMBED_TOKEN = 'MgUShorqNj1PQOj1PGC_19ABxFz8JiIS'
+export const QUOTE_EMBED_ORIGIN = 'https://fieldtaskpro.com'
+export const QUOTE_EMBED_TOKEN = 'QmanN5qdiUzOkW0klJbYcqXD4lWaJMU8'
 export const QUOTE_EMBED_SCRIPT = `${QUOTE_EMBED_ORIGIN}/embed.js`
 
 export default function QuoteEmbed({

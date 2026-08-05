@@ -23,7 +23,7 @@ export default function BookingModal({ onClose }) {
         </button>
         <h3 className="quote-modal__title">{t('booking.requestTitle')}</h3>
         <p className="quote-modal__sub">{t('booking.requestSub')}</p>
-        <QuoteEmbed title={t('booking.requestTitle')} maxWidth="100%" />
+        <QuoteEmbed title={t('booking.requestTitle')} />
       </div>
     </div>
   )
