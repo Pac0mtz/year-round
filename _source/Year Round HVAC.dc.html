@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;padding:0;-webkit-font-smoothing:antialiased}
+  a{color:#b7202f;text-decoration:none}
+  a:hover{color:#8a1622}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  @keyframes pulseDot{0%,100%{opacity:1}50%{opacity:0.35}}
+</style>
+</helmet>
+
+<div style="font-family:'Public Sans',sans-serif;color:#151f33;background:#f8f7f2;min-height:100%;overflow-x:hidden">
+
+<sc-if value="{{ emergencyEnabled }}" hint-placeholder-val="{{ true }}">
+  <div style="background:#b7202f;color:#fff;text-align:center;padding:8px 16px;font-size:12.5px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase">
+    24/7 Emergency Service &mdash; Call <a href="tel:8155550142" style="color:#fff;text-decoration:underline">(815) 555-0142</a>
+  </div>
+</sc-if>
+
+<header style="position:sticky;top:0;z-index:40;background:#1b2a4a;display:flex;alignItems:center;justifyContent:space-between;padding:14px clamp(20px,4vw,40px);borderBottom:3px solid #b7202f">
+  <div onClick="{{ goHome }}" style="cursor:pointer">
+    <span style="fontFamily:'Oswald',sans-serif;fontWeight:700;fontSize:22px;color:#fff;textTransform:uppercase;letterSpacing:0.03em">Year Round</span>
+    <div style="fontSize:10.5px;fontWeight:600;letterSpacing:0.12em;color:#e8b3ba;textTransform:uppercase;marginTop:2px">Heating &amp; Air Conditioning</div>
+  </div>
+
+  <sc-if value="{{ showDesktopNav }}" hint-placeholder-val="{{ true }}">
+  <nav style="display:flex;alignItems:center;gap:26px">
+    <a onClick="{{ goHome }}" style="fontSize:14px;fontWeight:600;color:{{ navColors.home }};cursor:pointer;textTransform:uppercase;letterSpacing:0.03em">Home</a>
+    <div style="position:relative">
+      <span onClick="{{ toggleServicesOpen }}" style="fontSize:14px;fontWeight:600;color:{{ navColors.service }};cursor:pointer;textTransform:uppercase;letterSpacing:0.03em;display:flex;alignItems:center;gap:4px">Services <span style="fontSize:9px;transform:{{ servicesArrow }}">&#9660;</span></span>
+      <sc-if value="{{ servicesOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;top:30px;left:-16px;background:#fff;borderRadius:4px;boxShadow:0 18px 40px rgba(21,31,51,0.28);padding:8px;display:grid;gridTemplateColumns:repeat(auto-fit,minmax(180px,1fr));gap:2px;width:420px;borderTop:3px solid #b7202f;animation:fadeIn 0.15s ease">
+          <sc-for list="{{ services }}" as="svc" hint-placeholder-count="8">
+            <a onClick="{{ svc.go }}" style="display:block;padding:9px 12px;borderRadius:3px;cursor:pointer;fontSize:13.5px;fontWeight:600;color:#151f33">{{ svc.label }}</a>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+    <a onClick="{{ goAbout }}" style="fontSize:14px;fontWeight:600;color:{{ navColors.about }};cursor:pointer;textTransform:uppercase;letterSpacing:0.03em">About</a>
+    <a onClick="{{ goReviews }}" style="fontSize:14px;fontWeight:600;color:{{ navColors.reviews }};cursor:pointer;textTransform:uppercase;letterSpacing:0.03em">Reviews</a>
+    <a onClick="{{ goTips }}" style="fontSize:14px;fontWeight:600;color:{{ navColors.tips }};cursor:pointer;textTransform:uppercase;letterSpacing:0.03em">Tips</a>
+    <a onClick="{{ goContact }}" style="fontSize:14px;fontWeight:600;color:{{ navColors.contact }};cursor:pointer;textTransform:uppercase;letterSpacing:0.03em">Contact</a>
+  </nav>
+  </sc-if>
+
+  <div style="display:flex;alignItems:center;gap:14px">
+    <sc-if value="{{ showDesktopNav }}" hint-placeholder-val="{{ true }}">
+      <a href="tel:8155550142" style="fontFamily:'Oswald',sans-serif;fontWeight:600;fontSize:16px;color:#fff">(815) 555-0142</a>
+    </sc-if>
+    <button onClick="{{ openBooking }}" style="background:#b7202f;color:#fff;border:none;borderRadius:3px;padding:11px 20px;fontSize:13px;fontWeight:700;cursor:pointer;textTransform:uppercase;letterSpacing:0.04em">Schedule Service</button>
+    <sc-if value="{{ showMobileToggle }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ toggleMobile }}" style="background:none;border:1px solid #3a4a6b;borderRadius:3px;width:38px;height:38px;fontSize:18px;cursor:pointer;color:#fff">&#9776;</button>
+    </sc-if>
+  </div>
+</header>
+
+<sc-if value="{{ mobileOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;background:#1b2a4a;zIndex:60;padding:28px;display:flex;flexDirection:column;gap:20px;animation:fadeIn 0.2s ease;overflowY:auto">
+    <div style="display:flex;justifyContent:flex-end"><button onClick="{{ toggleMobile }}" style="background:none;border:none;fontSize:26px;cursor:pointer;color:#fff">&times;</button></div>
+    <a onClick="{{ goHome }}" style="fontSize:22px;fontFamily:'Oswald',sans-serif;fontWeight:600;color:#fff;textTransform:uppercase">Home</a>
+    <a onClick="{{ goAbout }}" style="fontSize:22px;fontFamily:'Oswald',sans-serif;fontWeight:600;color:#fff;textTransform:uppercase">About</a>
+    <div style="fontSize:13px;fontWeight:700;color:#e8b3ba;marginTop:6px;textTransform:uppercase;letterSpacing:0.06em">Services</div>
+    <sc-for list="{{ services }}" as="svc" hint-placeholder-count="8">
+      <a onClick="{{ svc.go }}" style="fontSize:17px;fontFamily:'Oswald',sans-serif;fontWeight:500;color:#fff;paddingLeft:8px">{{ svc.label }}</a>
+    </sc-for>
+    <a onClick="{{ goReviews }}" style="fontSize:22px;fontFamily:'Oswald',sans-serif;fontWeight:600;color:#fff;marginTop:6px;textTransform:uppercase">Reviews</a>
+    <a onClick="{{ goTips }}" style="fontSize:22px;fontFamily:'Oswald',sans-serif;fontWeight:600;color:#fff;textTransform:uppercase">Tips</a>
+    <a onClick="{{ goContact }}" style="fontSize:22px;fontFamily:'Oswald',sans-serif;fontWeight:600;color:#fff;textTransform:uppercase">Contact</a>
+    <a href="tel:8155550142" style="fontSize:20px;fontWeight:700;color:#e8b3ba;marginTop:10px">(815) 555-0142</a>
+  </div>
+</sc-if>
+
+<main key="{{ page }}" style="animation:fadeUp 0.5s ease both">
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<section>
+  <div style="padding:64px clamp(20px,4vw,40px) 72px;display:grid;gridTemplateColumns:repeat(auto-fit,minmax(340px,1fr));gap:48px;maxWidth:1280px;margin:0 auto;alignItems:center">
+    <div style="animation:fadeUp 0.6s ease both">
+      <div style="display:inline-flex;alignItems:center;gap:8px;background:#fbe4e6;color:#8a1622;fontSize:12.5px;fontWeight:700;padding:7px 14px;borderRadius:3px;marginBottom:22px;textTransform:uppercase;letterSpacing:0.05em">
+        <span style="width:7px;height:7px;borderRadius:50%;background:#b7202f;animation:pulseDot 1.6s infinite"></span>
+        Family-Owned in Joliet Since 1998
+      </div>
+      <h1 style="fontFamily:'Oswald',sans-serif;fontWeight:700;fontSize:clamp(34px,6vw,58px);lineHeight:1.05;margin:0 0 20px;color:#1b2a4a;textTransform:uppercase;letterSpacing:0.01em">Comfortable homes, every season, all year round.</h1>
+      <p style="fontSize:17px;lineHeight:1.6;color:#4a5468;maxWidth:520px;margin:0 0 28px">Honest heating and cooling service for Joliet and Will County &mdash; from a 2am furnace breakdown to a full system replacement, handled by technicians who actually live here.</p>
+      <div style="display:flex;gap:14px;flexWrap:wrap;marginBottom:32px">
+        <button onClick="{{ openBooking }}" style="background:#b7202f;color:#fff;border:none;borderRadius:3px;padding:15px 26px;fontSize:15px;fontWeight:700;cursor:pointer;textTransform:uppercase;letterSpacing:0.03em">Schedule Service</button>
+        <a href="tel:8155550142" style="display:flex;alignItems:center;gap:10px;border:2px solid #1b2a4a;borderRadius:3px;padding:13px 24px;fontSize:15px;fontWeight:700;color:#1b2a4a;textTransform:uppercase;letterSpacing:0.03em">Call (815) 555-0142</a>
+      </div>
+      <div style="display:flex;gap:24px;flexWrap:wrap">
+        <sc-for list="{{ trustBadges }}" as="t" hint-placeholder-count="4">
+          <div style="fontSize:12px;fontWeight:700;color:#4a5468;display:flex;alignItems:center;gap:6px;textTransform:uppercase;letterSpacing:0.03em"><span style="color:#b7202f">&#10003;</span>{{ t.label }}</div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="position:relative">
+      <image-slot id="hero-home" shape="rounded" radius="4" placeholder="Drop a photo: technician at a Joliet home" style="width:100%;height:440px;minWidth:0;borderTop:5px solid #b7202f;boxShadow:0 24px 48px rgba(21,31,51,0.2)"></image-slot>
+    </div>
+  </div>
+
+  <div style="background:#1b2a4a;padding:20px 0;overflow:hidden">
+    <div style="display:flex;gap:52px;whiteSpace:nowrap;animation:marquee 22s linear infinite;width:max-content">
+      <sc-for list="{{ brandsDoubled }}" as="b" hint-placeholder-count="16">
+        <span style="color:#7f8cab;fontSize:15px;fontWeight:700;letterSpacing:0.05em;textTransform:uppercase">{{ b.name }}</span>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="maxWidth:1280px;margin:0 auto;padding:80px clamp(20px,4vw,40px)">
+    <div style="textAlign:center;maxWidth:640px;margin:0 auto 48px">
+      <div style="fontSize:12.5px;fontWeight:700;color:#b7202f;textTransform:uppercase;letterSpacing:0.08em;marginBottom:10px">What We Do</div>
+      <h2 style="fontFamily:'Oswald',sans-serif;fontSize:34px;fontWeight:700;margin:0;color:#1b2a4a;textTransform:uppercase">One call for every heating and cooling need</h2>
+    </div>
+    <div style="display:grid;gridTemplateColumns:repeat(auto-fit,minmax(240px,1fr));gap:18px">
+      <sc-for list="{{ services }}" as="svc" hint-placeholder-count="8">
+        <div onClick="{{ svc.go }}" style="background:#fff;border:1px solid #e3e0d8;borderTop:4px solid #1b2a4a;padding:24px 20px;cursor:pointer;animation:fadeUp 0.5s ease both;animationDelay:{{ svc.delay }}s">
+          <span style="width:40px;height:40px;background:#fbe4e6;color:#b7202f;display:flex;alignItems:center;justifyContent:center;fontSize:11px;fontWeight:800;marginBottom:14px">{{ svc.badge }}</span>
+          <div style="fontFamily:'Oswald',sans-serif;fontSize:17px;fontWeight:600;marginBottom:6px;color:#1b2a4a;textTransform:uppercase">{{ svc.label }}</div>
+          <div style="fontSize:13.5px;color:#4a5468;lineHeight:1.5;marginBottom:10px">{{ svc.short }}</div>
+          <span style="fontSize:12.5px;fontWeight:700;color:#b7202f;textTransform:uppercase;letterSpacing:0.03em">Learn more &rarr;</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div ref="{{ statsRef }}" style="background:#1b2a4a;padding:56px clamp(20px,4vw,40px)">
+    <div style="maxWidth:1100px;margin:0 auto;display:grid;gridTemplateColumns:repeat(auto-fit,minmax(150px,1fr));gap:24px;textAlign:center">
+      <div>
+        <div style="fontFamily:'Oswald',sans-serif;fontSize:42px;fontWeight:700;color:#fff">{{ statCounts.years }}+</div>
+        <div style="fontSize:12.5px;color:#a9b3ca;fontWeight:700;marginTop:6px;textTransform:uppercase;letterSpacing:0.03em">Years Serving Will County</div>
+      </div>
+      <div>
+        <div style="fontFamily:'Oswald',sans-serif;fontSize:42px;fontWeight:700;color:#fff">{{ statCounts.homesDisplay }}+</div>
+        <div style="fontSize:12.5px;color:#a9b3ca;fontWeight:700;marginTop:6px;textTransform:uppercase;letterSpacing:0.03em">Systems Installed &amp; Repaired</div>
+      </div>
+      <div>
+        <div style="fontFamily:'Oswald',sans-serif;fontSize:42px;fontWeight:700;color:#ff8d97">{{ statCounts.rating }}&#9733;</div>
+        <div style="fontSize:12.5px;color:#a9b3ca;fontWeight:700;marginTop:6px;textTransform:uppercase;letterSpacing:0.03em">Average Customer Rating</div>
+      </div>
+      <div>
+        <div style="fontFamily:'Oswald',sans-serif;fontSize:42px;fontWeight:700;color:#fff">&lt;{{ statCounts.response }}Hrs</div>
+        <div style="fontSize:12.5px;color:#a9b3ca;fontWeight:700;marginTop:6px;textTransform:uppercase;letterSpacing:0.03em">Emergency Response Time</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="maxWidth:1280px;margin:0 auto;padding:80px clamp(20px,4vw,40px);display:grid;gridTemplateColumns:repeat(auto-fit,minmax(320px,1fr));gap:48px;alignItems:center">
+    <image-slot id="service-area-map" shape="rounded" radius="4" placeholder="Drop a Will County service-area map" style="width:100%;height:360px;minWidth:0"></image-slot>
+    <div>
+      <div style="fontSize:12.5px;fontWeight:700;color:#b7202f;textTransform:uppercase;letterSpacing:0.08em;marginBottom:10px">Service Area</div>
+      <h2 style="fontFamily:'Oswald',sans-serif;fontSize:30px;fontWeight:700;margin:0 0 14px;color:#1b2a4a;textTransform:uppercase">Proudly serving all of Will County</h2>
+      <p style="fontSize:15.5px;lineHeight:1.6;color:#4a5468;marginBottom:22px">Based in Joliet, our trucks are out across the whole county every day &mdash; usually the same day you call.</p>
+      <div style="display:flex;flexWrap:wrap;gap:10px">
+        <sc-for list="{{ towns }}" as="town" hint-placeholder-count="10">
+          <span style="background:#fff;border:1px solid #e3e0d8;padding:7px 14px;fontSize:13px;fontWeight:600;color:#1b2a4a">{{ town }}</span>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:#fff;padding:80px clamp(20px,4vw,40px);borderTop:1px solid #e3e0d8;borderBottom:1px solid #e3e0d8">
+    <div style="maxWidth:1280px;margin:0 auto">
+      <div style="textAlign:center;maxWidth:640px;margin:0 auto 44px">
+        <div style="fontSize:12.5px;fontWeight:700;color:#b7202f;textTransform:uppercase;letterSpacing:0.08em;marginBottom:10px">Real Customers</div>
+        <h2 style="fontFamily:'Oswald',sans-serif;fontSize:34px;fontWeight:700;margin:0;color:#1b2a4a;textTransform:uppercase">What Will County is saying</h2>
+      </div>
+      <div style="display:grid;gridTemplateColumns:repeat(auto-fit,minmax(240px,1fr));gap:18px">
+        <sc-for list="{{ homeTestimonials }}" as="rv" hint-placeholder-count="4">
+          <div style="background:#f8f7f2;border:1px solid #e3e0d8;padding:20px;animation:fadeUp 0.5s ease both;animationDelay:{{ rv.delay }}s">
+            <div style="color:#b7202f;fontSize:14px;marginBottom:10px">{{ rv.stars }}</div>
+            <p style="fontSize:14px;lineHeight:1.55;color:#1b2a4a;margin:0 0 14px">&ldquo;{{ rv.quote }}&rdquo;</p>
+            <div style="fontSize:13px;fontWeight:700;color:#1b2a4a">{{ rv.name }}</div>
+            <div style="fontSize:12px;color:#4a5468">{{ rv.town }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="textAlign:center;marginTop:32px">
+        <a onClick="{{ goReviews }}" style="fontWeight:700;fontSize:14px;cursor:pointer;textTransform:uppercase;letterSpacing:0.03em">Read all reviews &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <div style="maxWidth:1280px;margin:0 auto;padding:80px clamp(20px,4vw,40px)">
+    <div style="textAlign:center;maxWidth:640px;margin:0 auto 44px">
+      <div style="fontSize:12.5px;fontWeight:700;color:#b7202f;textTransform:uppercase;letterSpacing:0.08em;marginBottom:10px">From Our Technicians</div>
+      <h2 style="fontFamily:'Oswald',sans-serif;fontSize:34px;fontWeight:700;margin:0;color:#1b2a4a;textTransform:uppercase">Comfort tips &amp; seasonal advice</h2>
+    </div>
+    <div style="display:grid;gridTemplateColumns:repeat(auto-fit,minmax(240px,1fr));gap:18px">
+      <sc-for list="{{ homeTips }}" as="tip" hint-placeholder-count="3">
+        <div style="background:#fff;border:1px solid #e3e0d8;padding:22px;animation:fadeUp 0.5s ease both;animationDelay:{{ tip.delay }}s">
+          <span style="fontSize:11px;fontWeight:700;color:#b7202f;textTransform:uppercase;letterSpacing:0.05em">{{ tip.category }}</span>
+          <div style="fontFamily:'Oswald',sans-serif;fontSize:18px;fontWeight:600;margin:10px 0 8px;color:#1b2a4a">{{ tip.title }}</div>
+          <div style="fontSize:13.5px;color:#4a5468;lineHeight:1.5">{{ tip.excerpt }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="textAlign:center;marginTop:32px">
+      <a onClick="{{ goTips }}" style="fontWeight:700;fontSize:14px;cursor:pointer;textTransform:uppercase;letterSpacing:0.03em">More tips &rarr;</a>
+    </div>
+  </div>
+
+  <div style="background:#b7202f;padding:64px clamp(20px,4vw,40px);textAlign:center">
+    <h2 style="fontFamily:'Oswald',sans-serif;fontSize:32px;fontWeight:700;color:#fff;margin:0 0 14px;textTransform:uppercase">Ready for year-round comfort?</h2>
+    <p style="color:#fbe4e6;fontSize:15.5px;marginBottom:26px">Book online or call &mdash; a real person answers, every time.</p>
+    <div style="display:flex;gap:14px;justifyContent:center;flexWrap:wrap">
+      <button onClick="{{ openBooking }}" style="background:#1b2a4a;color:#fff;border:none;borderRadius:3px;padding:15px 28px;fontSize:15px;fontWeight:700;cursor:pointer;textTransform:uppercase;letterSpacing:0.03em">Schedule Service</button>
+      <a href="tel:8155550142" style="border:2px solid #fff;color:#fff;borderRadius:3px;padding:13px 24px;fontSize:15px;fontWeight:700;textTransform:uppercase;letterSpacing:0.03em">(815) 555-0142</a>
+    </div>
+  </div>
+</section>
+</sc-if>
+
+<sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
+<section style="maxWidth:1280px;margin:0 auto;padding:60px clamp(20px,4vw,40px) 88px">
+  <div style="display:grid;gridTemplateColumns:repeat(auto-fit,minmax(340px,1fr));gap:48px;alignItems:center;marginBottom:76px">
+    <div style="animation:fadeUp 0.55s ease both">
+      <div style="fontSize:12.5px;fontWeight:700;color:#b7202f;textTransform:uppercase;letterSpacing:0.08em;marginBottom:10px">Our Story</div>
+      <h1 style="fontFamily:'Oswald',sans-serif;fontSize:clamp(28px,4.5vw,40px);fontWeight:700;margin:0 0 18px;color:#1b2a4a;textTransform:uppercase">Rooted in Will County, built on trust.</h1>
+      <p style="fontSize:15.5px;lineHeight:1.7;color:#4a5468;marginBottom:14px">Mike Delgado started Year Round Heating and Air Conditioning in 1998 with one truck and a short list of Joliet neighbors who needed their furnaces fixed. The promise was simple: show up when you say you will, explain what's actually wrong, and charge a fair price.</p>
+      <p style="fontSize:15.5px;lineHeight:1.7;color:#4a5468">Almost thirty years later, that's still how the company runs &mdash; now with a full team of technicians, a commercial division, and thousands of homes and businesses across Will County. It's still family-run, and it's still local.</p>
+    </div>
+    <image-slot id="about-hero" shape="rounded" radius="4" placeholder="Drop a photo of the founder or team" style="width:100%;height:400px;minWidth:0;borderTop:5px solid #b7202f"></image-slot>
+  </div>
+
+  <div style="marginBottom:76px">
+    <h2 style="fontFamily:'Oswald',sans-serif;fontSize:26px;fontWeight:700;textAlign:center;margin:0 0 36px;color:#1b2a4a;textTransform:uppercase">What we run on</h2>
+    <div style="display:grid;gridTemplateColumns:repeat(auto-fit,minmax(220px,1fr));gap:18px">
+      <sc-for list="{{ values }}" as="v" hint-placeholder-count="4">
+        <div style="background:#fff;border:1px solid #e3e0d8;borderTop:4px solid #1b2a4a;padding:24px;animation:fadeUp 0.5s ease both;animationDelay:{{ v.delay }}s">
+          <div style="fontFamily:'Oswald',sans-serif;fontSize:17px;fontWeight:600;marginBottom:8px;color:#1b2a4a;textTransform:uppercase">{{ v.title }}</div>
+          <div style="fontSize:13.5px;color:#4a5468;lineHeight:1.55">{{ v.desc }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="marginBottom:76px">
+    <h2 style="fontFamily:'Oswald',sans-serif;fontSize:26px;fontWeight:700;textAlign:center;margin:0 0 36px;color:#1b2a4a;textTransform:uppercase">Our history</h2>
+    <div style="display:grid;gridTemplateColumns:repeat(auto-fit,minmax(220px,1fr));gap:18px">
+      <sc-for list="{{ timeline }}" as="tl" hint-placeholder-count="4">
+        <div style="borderTop:4px solid #b7202f;paddingTop:16px;animation:fadeUp 0.5s ease both;animationDelay:{{ tl.delay }}s">
+          <div style="fontFamily:'Oswald',sans-serif;fontSize:22px;fontWeight:700;color:#b7202f;marginBottom:8px">{{ tl.year }}</div>
+          <div style="fontSize:13.5px;color:#4a5468;lineHeight:1.55">{{ tl.text }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="marginBottom:76px">
+    <h2 style="fontFamily:'Oswald',sans-serif;fontSize:26px;fontWeight:700;textAlign:center;margin:0 0 36px;color:#1b2a4a;textTransform:uppercase">Meet the team</h2>
+    <div style="display:grid;gridTemplateColumns:repeat(auto-fit,minmax(200px,1fr));gap:24px">
+      <sc-for list="{{ team }}" as="member" hint-placeholder-count="3">
+        <div style="textAlign:center">
+          <image-slot id="{{ member.slotId }}" shape="circle" placeholder="Team photo" style="width:150px;height:150px;margin:0 auto 16px"></image-slot>
+          <div style="fontFamily:'Oswald',sans-serif;fontSize:17px;fontWeight:600;color:#1b2a4a;textTransform:uppercase">{{ member.name }}</div>
+          <div style="fontSize:12.5px;color:#b7202f;fontWeight:700">{{ member.role }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display:flex;flexWrap:wrap;gap:22px;justifyContent:center;background:#fff;border:1px solid #e3e0d8;padding:32px">
+    <sc-for list="{{ certs }}" as="c" hint-placeholder-count="4">
+      <div style="fontSize:13px;fontWeight:700;color:#1b2a4a;display:flex;alignItems:center;gap:8px;textTransform:uppercase;letterSpacing:0.02em"><span style="color:#b7202f">&#10003;</span>{{ c }}</div>
+    </sc-for>
+  </div>
+</section>
+</sc-if>
+
+<sc-if value="{{ isService }}" hint-placeholder-val="{{ false }}">
+<section>
+  <div style="background:#1b2a4a;padding:64px clamp(20px,4vw,40px) 52px">
+    <div style="maxWidth:1000px;margin:0 auto;animation:fadeUp 0.55s ease both">
+      <div style="display:inline-block;background:#b7202f;color:#fff;fontSize:11.5px;fontWeight:800;padding:6px 14px;marginBottom:18px;letterSpacing:0.05em;textTransform:uppercase">{{ currentService.kicker }}</div>
+      <h1 style="fontFamily:'Oswald',sans-serif;fontSize:clamp(30px,5vw,46px);fontWeight:700;color:#fff;margin:0 0 16px;maxWidth:800px;textTransform:uppercase">{{ currentService.headline }}</h1>
+      <p style="fontSize:16.5px;color:#c3ccdd;lineHeight:1.6;maxWidth:640px;marginBottom:28px">{{ currentService.sub }}</p>
+      <div style="display:flex;gap:14px;flexWrap:wrap">
+        <button onClick="{{ openBooking }}" style="background:#b7202f;color:#fff;border:none;borderRadius:3px;padding:14px 24px;fontSize:14.5px;fontWeight:700;cursor:pointer;textTransform:uppercase;letterSpacing:0.03em">Schedule {{ currentService.label }}</button>
+        <a href="tel:8155550142" style="border:2px solid #fff;color:#fff;borderRadius:3px;padding:12px 22px;fontSize:14.5px;fontWeight:700;textTransform:uppercase;letterSpacing:0.03em">(815) 555-0142</a>
+      </div>
+    </div>
+  </div>
+
+  <div style="maxWidth:1000px;margin:0 auto;padding:56px clamp(20px,4vw,40px)">
+    <h2 style="fontFamily:'Oswald',sans-serif;fontSize:26px;fontWeight:700;margin:0 0 24px;color:#1b2a4a;textTransform:uppercase">Signs you need this</h2>
+    <div style="display:grid;gridTemplateColumns:repeat(auto-fit,minmax(260px,1fr));gap:12px;marginBottom:64px">
+      <sc-for list="{{ currentService.signs }}" as="s" hint-placeholder-count="6">
+        <div style="display:flex;gap:12px;alignItems:flex-start;background:#fff;border:1px solid #e3e0d8;padding:14px;animation:fadeUp 0.4s ease both;animationDelay:{{ s.delay }}s">
+          <span style="color:#b7202f;fontSize:15px;flexShrink:0">&#9679;</span>
+          <span style="fontSize:14px;color:#1b2a4a;lineHeight:1.5">{{ s.text }}</span>
+        </div>
+      </sc-for>
+    </div>
+
+    <h2 style="fontFamily:'Oswald',sans-serif;fontSize:26px;fontWeight:700;margin:0 0 24px;color:#1b2a4a;textTransform:uppercase">What's included</h2>
+    <div style="display:grid;gridTemplateColumns:repeat(auto-fit,minmax(260px,1fr));gap:18px;marginBottom:64px">
+      <sc-for list="{{ currentService.included }}" as="inc" hint-placeholder-count="4">
+        <div style="animation:fadeUp 0.4s ease both;animationDelay:{{ inc.delay }}s">
+          <div style="fontFamily:'Oswald',sans-serif;fontSize:16.5px;fontWeight:600;marginBottom:6px;color:#1b2a4a">{{ inc.t }}</div>
+          <div style="fontSize:13.5px;color:#4a5468;lineHeight:1.55">{{ inc.d }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <h2 style="fontFamily:'Oswald',sans-serif;fontSize:26px;fontWeight:700;margin:0 0 24px;color:#1b2a4a;textTransform:uppercase">How it works</h2>
+    <div style="display:grid;gridTemplateColumns:repeat(auto-fit,minmax(200px,1fr));gap:22px;marginBottom:64px">
+      <sc-for list="{{ currentService.process }}" as="p" hint-placeholder-count="3">
+        <div style="animation:fadeUp 0.4s ease both;animationDelay:{{ p.delay }}s">
+          <div style="fontFamily:'Oswald',sans-serif;fontSize:28px;fontWeight:700;color:#b7202f;marginBottom:8px">{{ p.n }}</div>
+          <div style="fontFamily:'Oswald',sans-serif;fontSize:15.5px;fontWeight:600;marginBottom:6px;color:#1b2a4a">{{ p.t }}</div>
+          <div style="fontSize:13px;color:#4a5468;lineHeight:1.5">{{ p.d }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="background:#fff;border:1px solid #e3e0d8;padding:24px 26px;marginBottom:64px">
+      <div style="fontSize:12.5px;fontWeight:700;color:#1b2a4a;textTransform:uppercase;letterSpacing:0.05em;marginBottom:12px">Brands We Service</div>
+      <div style="display:flex;gap:10px;flexWrap:wrap">
+        <sc-for list="{{ brands }}" as="b" hint-placeholder-count="8">
+          <span style="background:#f8f7f2;border:1px solid #e3e0d8;padding:6px 14px;fontSize:12.5px;fontWeight:600;color:#1b2a4a">{{ b.name }}</span>
+        </sc-for>
+      </div>
+    </div>
+
+    <h2 style="fontFamily:'Oswald',sans-serif;fontSize:26px;fontWeight:700;margin:0 0 20px;color:#1b2a4a;textTransform:uppercase">Frequently asked</h2>
+    <div style="marginBottom:56px">
+      <sc-for list="{{ currentService.faq }}" as="f" hint-placeholder-count="3">
+        <div style="borderBottom:1px solid #e3e0d8;padding:16px 0">
+          <div onClick="{{ f.toggle }}" style="display:flex;justifyContent:space-between;alignItems:center;cursor:pointer">
+            <span style="fontSize:15px;fontWeight:700;color:#1b2a4a">{{ f.q }}</span>
+            <span style="fontSize:18px;color:#b7202f;fontWeight:700">{{ f.symbol }}</span>
+          </div>
+          <sc-if value="{{ f.isOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="fontSize:14px;color:#4a5468;lineHeight:1.6;marginTop:12px;maxWidth:700px;animation:fadeIn 0.2s ease">{{ f.a }}</div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="background:#1b2a4a;padding:40px;textAlign:center">
+      <h3 style="fontFamily:'Oswald',sans-serif;fontSize:24px;fontWeight:700;color:#fff;margin:0 0 10px;textTransform:uppercase">{{ currentService.ctaHeadline }}</h3>
+      <p style="color:#c3ccdd;fontSize:14.5px;marginBottom:22px">Same-day scheduling across Joliet and Will County.</p>
+      <div style="display:flex;gap:14px;justifyContent:center;flexWrap:wrap">
+        <button onClick="{{ openBooking }}" style="background:#b7202f;color:#fff;border:none;borderRadius:3px;padding:14px 24px;fontSize:14.5px;fontWeight:700;cursor:pointer;textTransform:uppercase;letterSpacing:0.03em">Schedule Service</button>
+        <a href="tel:8155550142" style="border:2px solid #fff;color:#fff;borderRadius:3px;padding:12px 22px;fontSize:14.5px;fontWeight:700;textTransform:uppercase;letterSpacing:0.03em">(815) 555-0142</a>
+      </div>
+    </div>
+  </div>
+</section>
+</sc-if>
+
+<sc-if value="{{ isReviews }}" hint-placeholder-val="{{ false }}">
+<section style="maxWidth:1280px;margin:0 auto;padding:60px clamp(20px,4vw,40px) 88px">
+  <div style="textAlign:center;marginBottom:40px;animation:fadeUp 0.5s ease both">
+    <div style="fontSize:12.5px;fontWeight:700;color:#b7202f;textTransform:uppercase;letterSpacing:0.08em;marginBottom:10px">Customer Reviews</div>
+    <h1 style="fontFamily:'Oswald',sans-serif;fontSize:clamp(28px,4.5vw,40px);fontWeight:700;margin:0 0 12px;color:#1b2a4a;textTransform:uppercase">4.9&#9733; from 600+ Will County customers</h1>
+    <p style="fontSize:15px;color:#4a5468">Filter by the service you're curious about, or browse everything.</p>
+  </div>
+
+  <div style="display:flex;gap:8px;justifyContent:center;flexWrap:wrap;marginBottom:36px">
+    <sc-for list="{{ reviewFilters }}" as="rf" hint-placeholder-count="6">
+      <button onClick="{{ rf.select }}" style="border:2px solid {{ rf.borderColor }};background:{{ rf.bg }};color:{{ rf.color }};borderRadius:3px;padding:8px 16px;fontSize:12.5px;fontWeight:700;cursor:pointer;textTransform:uppercase;letterSpacing:0.03em">{{ rf.label }}</button>
+    </sc-for>
+  </div>
+
+  <div style="display:grid;gridTemplateColumns:repeat(auto-fit,minmax(260px,1fr));gap:18px">
+    <sc-for list="{{ filteredTestimonials }}" as="rv" hint-placeholder-count="8">
+      <div style="background:#fff;border:1px solid #e3e0d8;padding:22px;animation:fadeUp 0.4s ease both;animationDelay:{{ rv.delay }}s">
+        <div style="color:#b7202f;fontSize:14px;marginBottom:10px">{{ rv.stars }}</div>
+        <p style="fontSize:14px;lineHeight:1.55;color:#1b2a4a;margin:0 0 14px">&ldquo;{{ rv.quote }}&rdquo;</p>
+        <div style="fontSize:13px;fontWeight:700;color:#1b2a4a">{{ rv.name }}</div>
+        <div style="fontSize:12px;color:#4a5468">{{ rv.town }} &middot; {{ rv.tag }}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="textAlign:center;marginTop:44px;background:#fff;border:1px solid #e3e0d8;padding:36px">
+    <h3 style="fontFamily:'Oswald',sans-serif;fontSize:21px;fontWeight:700;margin:0 0 10px;color:#1b2a4a;textTransform:uppercase">Had a good experience with us?</h3>
+    <p style="color:#4a5468;fontSize:14px;marginBottom:18px">We'd love a review &mdash; it helps our neighbors find us too.</p>
+    <a href="#" style="background:#b7202f;color:#fff;borderRadius:3px;padding:12px 22px;fontSize:13.5px;fontWeight:700;display:inline-block;textTransform:uppercase;letterSpacing:0.03em">Leave a Google Review</a>
+  </div>
+</section>
+</sc-if>
+
+<sc-if value="{{ isTips }}" hint-placeholder-val="{{ false }}">
+<section style="maxWidth:1100px;margin:0 auto;padding:60px clamp(20px,4vw,40px) 88px">
+  <div style="textAlign:center;marginBottom:44px;animation:fadeUp 0.5s ease both">
+    <div style="fontSize:12.5px;fontWeight:700;color:#b7202f;textTransform:uppercase;letterSpacing:0.08em;marginBottom:10px">From Our Technicians</div>
+    <h1 style="fontFamily:'Oswald',sans-serif;fontSize:clamp(28px,4.5vw,38px);fontWeight:700;margin:0 0 12px;color:#1b2a4a;textTransform:uppercase">Comfort tips &amp; seasonal advice</h1>
+    <p style="fontSize:15px;color:#4a5468">Practical, no-nonsense HVAC advice for Joliet homes. Tap a tip to read more.</p>
+  </div>
+  <div style="display:grid;gridTemplateColumns:repeat(auto-fit,minmax(280px,1fr));gap:18px">
+    <sc-for list="{{ tips }}" as="tip" hint-placeholder-count="6">
+      <div onClick="{{ tip.toggle }}" style="background:#fff;border:1px solid #e3e0d8;padding:22px;cursor:pointer;animation:fadeUp 0.4s ease both;animationDelay:{{ tip.delay }}s">
+        <span style="fontSize:11px;fontWeight:700;color:#b7202f;textTransform:uppercase;letterSpacing:0.05em">{{ tip.category }}</span>
+        <div style="fontFamily:'Oswald',sans-serif;fontSize:18px;fontWeight:600;margin:10px 0 8px;color:#1b2a4a">{{ tip.title }}</div>
+        <sc-if value="{{ tip.isOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="fontSize:13.5px;color:#4a5468;lineHeight:1.6;animation:fadeIn 0.2s ease">{{ tip.body }}</div>
+        </sc-if>
+        <sc-if value="{{ tip.isClosed }}" hint-placeholder-val="{{ true }}">
+          <div style="fontSize:13.5px;color:#4a5468;lineHeight:1.6">{{ tip.excerpt }}</div>
+        </sc-if>
+        <div style="fontSize:12px;fontWeight:700;color:#b7202f;marginTop:12px;textTransform:uppercase;letterSpacing:0.03em">{{ tip.toggleLabel }}</div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+</sc-if>
+
+<sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
+<section style="maxWidth:1280px;margin:0 auto;padding:60px clamp(20px,4vw,40px) 88px">
+  <div style="textAlign:center;marginBottom:44px;animation:fadeUp 0.5s ease both">
+    <div style="fontSize:12.5px;fontWeight:700;color:#b7202f;textTransform:uppercase;letterSpacing:0.08em;marginBottom:10px">Get In Touch</div>
+    <h1 style="fontFamily:'Oswald',sans-serif;fontSize:clamp(28px,4.5vw,38px);fontWeight:700;margin:0;color:#1b2a4a;textTransform:uppercase">Let's get you comfortable</h1>
+  </div>
+
+  <div style="display:grid;gridTemplateColumns:repeat(auto-fit,minmax(320px,1fr));gap:44px;marginBottom:64px">
+    <div>
+      <div style="background:#1b2a4a;padding:30px;color:#fff;marginBottom:18px">
+        <div style="fontSize:12.5px;fontWeight:700;color:#e8b3ba;textTransform:uppercase;letterSpacing:0.06em;marginBottom:16px">Contact</div>
+        <div style="fontSize:19px;fontWeight:700;fontFamily:'Oswald',sans-serif;marginBottom:6px"><a href="tel:8155550142" style="color:#fff">(815) 555-0142</a></div>
+        <div style="fontSize:14px;color:#c3ccdd;marginBottom:16px"><a href="mailto:service@yearroundhvacjoliet.com" style="color:#c3ccdd">service@yearroundhvacjoliet.com</a></div>
+        <div style="fontSize:14px;color:#c3ccdd;lineHeight:1.6">1742 Larkin Ave<br/>Joliet, IL 60435</div>
+      </div>
+      <div style="background:#fff;border:1px solid #e3e0d8;padding:30px">
+        <div style="fontSize:12.5px;fontWeight:700;color:#b7202f;textTransform:uppercase;letterSpacing:0.06em;marginBottom:16px">Hours</div>
+        <sc-for list="{{ hoursLines }}" as="h" hint-placeholder-count="4">
+          <div style="display:flex;justifyContent:space-between;fontSize:14px;color:#1b2a4a;padding:8px 0;borderBottom:1px solid #e3e0d8">
+            <span style="fontWeight:700">{{ h.day }}</span><span>{{ h.time }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="background:#fff;border:1px solid #e3e0d8;padding:34px">
+      <sc-if value="{{ bookingDoneInline }}" hint-placeholder-val="{{ false }}">
+        <div style="textAlign:center;padding:36px 10px;animation:fadeIn 0.25s ease">
+          <div style="fontSize:40px;marginBottom:14px;color:#b7202f">&#10003;</div>
+          <h3 style="fontFamily:'Oswald',sans-serif;fontSize:22px;fontWeight:700;color:#1b2a4a;marginBottom:10px;textTransform:uppercase">Thanks, {{ form.name }}!</h3>
+          <p style="color:#4a5468;fontSize:14px">We got your request and will call you at {{ form.phone }} shortly to confirm a time.</p>
+        </div>
+      </sc-if>
+      <sc-if value="{{ bookingFormVisibleInline }}" hint-placeholder-val="{{ true }}">
+        <h3 style="fontFamily:'Oswald',sans-serif;fontSize:21px;fontWeight:700;margin:0 0 18px;color:#1b2a4a;textTransform:uppercase">Request service</h3>
+        <form onSubmit="{{ submitForm }}" style="display:grid;gridTemplateColumns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+          <input placeholder="Full name" value="{{ form.name }}" onChange="{{ setName }}" required="" style="gridColumn:span 2;padding:12px 13px;border:1px solid #d5d1c6;borderRadius:3px;fontSize:14px;fontFamily:'Public Sans',sans-serif"/>
+          <input placeholder="Phone number" value="{{ form.phone }}" onChange="{{ setPhone }}" required="" style="padding:12px 13px;border:1px solid #d5d1c6;borderRadius:3px;fontSize:14px;fontFamily:'Public Sans',sans-serif"/>
+          <input placeholder="Email" type="email" value="{{ form.email }}" onChange="{{ setEmail }}" style="padding:12px 13px;border:1px solid #d5d1c6;borderRadius:3px;fontSize:14px;fontFamily:'Public Sans',sans-serif"/>
+          <input placeholder="Service address" value="{{ form.address }}" onChange="{{ setAddress }}" style="gridColumn:span 2;padding:12px 13px;border:1px solid #d5d1c6;borderRadius:3px;fontSize:14px;fontFamily:'Public Sans',sans-serif"/>
+          <select value="{{ form.service }}" onChange="{{ setService }}" style="padding:12px 13px;border:1px solid #d5d1c6;borderRadius:3px;fontSize:14px;fontFamily:'Public Sans',sans-serif;color:#1b2a4a">
+            <option value="">What do you need?</option>
+            <sc-for list="{{ services }}" as="svc" hint-placeholder-count="8">
+              <option value="{{ svc.label }}">{{ svc.label }}</option>
+            </sc-for>
+          </select>
+          <input type="date" value="{{ form.date }}" onChange="{{ setDate }}" style="padding:12px 13px;border:1px solid #d5d1c6;borderRadius:3px;fontSize:14px;fontFamily:'Public Sans',sans-serif;color:#1b2a4a"/>
+          <textarea placeholder="Anything else we should know?" value="{{ form.message }}" onChange="{{ setMessage }}" rows="3" style="gridColumn:span 2;padding:12px 13px;border:1px solid #d5d1c6;borderRadius:3px;fontSize:14px;fontFamily:'Public Sans',sans-serif;resize:vertical"></textarea>
+          <button type="submit" style="gridColumn:span 2;background:#b7202f;color:#fff;border:none;borderRadius:3px;padding:14px;fontSize:14.5px;fontWeight:700;cursor:pointer;textTransform:uppercase;letterSpacing:0.03em">Request Service</button>
+        </form>
+      </sc-if>
+    </div>
+  </div>
+
+  <image-slot id="contact-map" shape="rounded" radius="4" placeholder="Drop a Will County map graphic" style="width:100%;height:320px;minWidth:0;marginBottom:64px"></image-slot>
+
+  <h2 style="fontFamily:'Oswald',sans-serif;fontSize:24px;fontWeight:700;margin:0 0 22px;color:#1b2a4a;textAlign:center;textTransform:uppercase">Common questions</h2>
+  <div style="maxWidth:760px;margin:0 auto">
+    <sc-for list="{{ contactFaq }}" as="f" hint-placeholder-count="4">
+      <div style="borderBottom:1px solid #e3e0d8;padding:16px 0">
+        <div onClick="{{ f.toggle }}" style="display:flex;justifyContent:space-between;alignItems:center;cursor:pointer">
+          <span style="fontSize:15px;fontWeight:700;color:#1b2a4a">{{ f.q }}</span>
+          <span style="fontSize:18px;color:#b7202f;fontWeight:700">{{ f.symbol }}</span>
+        </div>
+        <sc-if value="{{ f.isOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="fontSize:14px;color:#4a5468;lineHeight:1.6;marginTop:12px;animation:fadeIn 0.2s ease">{{ f.a }}</div>
+        </sc-if>
+      </div>
+    </sc-for>
+  </div>
+</section>
+</sc-if>
+
+</main>
+
+<footer style="background:#1b2a4a;color:#c3ccdd;padding:52px clamp(20px,4vw,40px) 26px;borderTop:3px solid #b7202f">
+  <div style="maxWidth:1280px;margin:0 auto;display:grid;gridTemplateColumns:repeat(auto-fit,minmax(200px,1fr));gap:32px;marginBottom:36px">
+    <div>
+      <div style="fontFamily:'Oswald',sans-serif;fontWeight:700;fontSize:20px;color:#fff;marginBottom:8px;textTransform:uppercase">Year Round</div>
+      <div style="fontSize:13px;color:#8f9ab5;lineHeight:1.6;marginBottom:16px">Family-owned heating and air conditioning, serving Joliet and Will County since 1998.</div>
+      <div style="fontSize:13px;color:#8f9ab5">Fully licensed and insured in Illinois.</div>
+    </div>
+    <div>
+      <div style="fontSize:12.5px;fontWeight:700;color:#fff;marginBottom:14px;textTransform:uppercase;letterSpacing:0.05em">Services</div>
+      <div style="display:flex;flexDirection:column;gap:10px">
+        <sc-for list="{{ services }}" as="svc" hint-placeholder-count="8">
+          <a onClick="{{ svc.go }}" style="fontSize:13.5px;color:#c3ccdd;cursor:pointer">{{ svc.label }}</a>
+        </sc-for>
+      </div>
+    </div>
+    <div>
+      <div style="fontSize:12.5px;fontWeight:700;color:#fff;marginBottom:14px;textTransform:uppercase;letterSpacing:0.05em">Company</div>
+      <div style="display:flex;flexDirection:column;gap:10px">
+        <a onClick="{{ goAbout }}" style="fontSize:13.5px;color:#c3ccdd;cursor:pointer">About Us</a>
+        <a onClick="{{ goReviews }}" style="fontSize:13.5px;color:#c3ccdd;cursor:pointer">Reviews</a>
+        <a onClick="{{ goTips }}" style="fontSize:13.5px;color:#c3ccdd;cursor:pointer">Tips</a>
+        <a onClick="{{ goContact }}" style="fontSize:13.5px;color:#c3ccdd;cursor:pointer">Contact</a>
+      </div>
+    </div>
+    <div>
+      <div style="fontSize:12.5px;fontWeight:700;color:#fff;marginBottom:14px;textTransform:uppercase;letterSpacing:0.05em">Contact</div>
+      <div style="fontSize:13.5px;color:#c3ccdd;lineHeight:1.8">
+        <a href="tel:8155550142" style="color:#fff;fontWeight:700">(815) 555-0142</a><br/>
+        1742 Larkin Ave<br/>Joliet, IL 60435<br/>
+        <a href="mailto:service@yearroundhvacjoliet.com" style="color:#c3ccdd">service@yearroundhvacjoliet.com</a>
+      </div>
+    </div>
+  </div>
+  <div style="maxWidth:1280px;margin:0 auto;borderTop:1px solid #2f3d5c;paddingTop:20px;fontSize:12px;color:#7f8cab">&copy; {{ year }} Year Round Heating and Air Conditioning. All rights reserved.</div>
+</footer>
+
+<sc-if value="{{ bookingOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;background:rgba(21,31,51,0.6);zIndex:80;display:flex;alignItems:center;justifyContent:center;padding:20px;animation:fadeIn 0.2s ease" onClick="{{ closeBookingBackdrop }}">
+    <div onClick="{{ stopClick }}" style="background:#fff;borderTop:5px solid #b7202f;maxWidth:520px;width:100%;maxHeight:88vh;overflowY:auto;padding:32px;animation:fadeIn 0.22s ease;position:relative">
+      <button onClick="{{ closeBooking }}" style="position:absolute;top:16px;right:16px;background:none;border:none;fontSize:22px;cursor:pointer;color:#4a5468">&times;</button>
+      <sc-if value="{{ bookingDone }}" hint-placeholder-val="{{ false }}">
+        <div style="textAlign:center;padding:26px 6px">
+          <div style="fontSize:40px;marginBottom:14px;color:#b7202f">&#10003;</div>
+          <h3 style="fontFamily:'Oswald',sans-serif;fontSize:22px;fontWeight:700;color:#1b2a4a;marginBottom:10px;textTransform:uppercase">Thanks, {{ form.name }}!</h3>
+          <p style="color:#4a5468;fontSize:14px;marginBottom:20px">We got your request and will call you at {{ form.phone }} shortly to confirm a time.</p>
+          <button onClick="{{ closeBooking }}" style="background:#b7202f;color:#fff;border:none;borderRadius:3px;padding:12px 24px;fontSize:13.5px;fontWeight:700;cursor:pointer;textTransform:uppercase;letterSpacing:0.03em">Done</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ bookingFormVisible }}" hint-placeholder-val="{{ true }}">
+        <h3 style="fontFamily:'Oswald',sans-serif;fontSize:21px;fontWeight:700;margin:0 0 6px;color:#1b2a4a;textTransform:uppercase">Schedule service</h3>
+        <p style="fontSize:13px;color:#4a5468;marginBottom:18px">We'll call to confirm the details.</p>
+        <form onSubmit="{{ submitForm }}" style="display:grid;gridTemplateColumns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+          <input placeholder="Full name" value="{{ form.name }}" onChange="{{ setName }}" required="" style="gridColumn:span 2;padding:11px 13px;border:1px solid #d5d1c6;borderRadius:3px;fontSize:14px;fontFamily:'Public Sans',sans-serif"/>
+          <input placeholder="Phone number" value="{{ form.phone }}" onChange="{{ setPhone }}" required="" style="padding:11px 13px;border:1px solid #d5d1c6;borderRadius:3px;fontSize:14px;fontFamily:'Public Sans',sans-serif"/>
+          <input placeholder="Email" type="email" value="{{ form.email }}" onChange="{{ setEmail }}" style="padding:11px 13px;border:1px solid #d5d1c6;borderRadius:3px;fontSize:14px;fontFamily:'Public Sans',sans-serif"/>
+          <select value="{{ form.service }}" onChange="{{ setService }}" style="gridColumn:span 2;padding:11px 13px;border:1px solid #d5d1c6;borderRadius:3px;fontSize:14px;fontFamily:'Public Sans',sans-serif;color:#1b2a4a">
+            <option value="">What do you need?</option>
+            <sc-for list="{{ services }}" as="svc" hint-placeholder-count="8">
+              <option value="{{ svc.label }}">{{ svc.label }}</option>
+            </sc-for>
+          </select>
+          <button type="submit" style="gridColumn:span 2;background:#b7202f;color:#fff;border:none;borderRadius:3px;padding:13px;fontSize:14.5px;fontWeight:700;cursor:pointer;textTransform:uppercase;letterSpacing:0.03em">Request Service</button>
+        </form>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{}, &quot;emergencyBarEnabled&quot;: {&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;}, &quot;statsAnimated&quot;: {&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;}}">
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.serviceDefs = [
+      {id:"ac-repair", label:"AC Repair", badge:"AR", short:"Fast diagnosis and same-day repairs for warm air, weird noises, and dead systems.",
+        kicker:"Fast, Honest AC Repair", headline:"Cooling down fast when Illinois summers heat up.",
+        sub:"From warm airflow to a system that won't start, our technicians diagnose the real problem and fix it right the first time — no guessing, no upselling.",
+        signs:["Warm air blowing from the vents","AC runs constantly but never cools the house","Grinding, clicking, or squealing noises","Water pooling near the indoor unit","Higher electric bills with no explanation","Thermostat set low but home stays warm"],
+        included:[{t:"Full System Diagnostic",d:"We test refrigerant levels, electrical components, and airflow to pinpoint the exact issue."},{t:"Upfront, Written Pricing",d:"You approve the cost before any repair begins — no surprises on the invoice."},{t:"Same-Day Repairs",d:"Most repairs are completed in a single visit using parts we carry on the truck."},{t:"90-Day Repair Guarantee",d:"If the same issue returns within 90 days, we come back and fix it at no charge."}],
+        process:[{n:"01",t:"Call or Book Online",d:"Tell us what's going on and we'll get a technician scheduled, often same-day."},{n:"02",t:"On-Site Diagnosis",d:"We inspect your system and explain exactly what's wrong in plain language."},{n:"03",t:"Approve & Repair",d:"You approve the fix and price up front, then we get your air cooling again."}],
+        faq:[{q:"How fast can you get here?",a:"Most Joliet-area calls are scheduled same-day, and we offer priority scheduling for no-cool emergencies."},{q:"Do you repair all AC brands?",a:"Yes — our technicians are trained on Trane, Carrier, Lennox, Rheem, Goodman, American Standard, York, and Bryant systems."},{q:"What if my AC can't be repaired?",a:"If a repair isn't cost-effective, we'll walk you through honest replacement options with no pressure."}],
+        ctaHeadline:"Don't sweat it out another day."},
+      {id:"ac-install", label:"AC Installation & Replacement", badge:"AI", short:"Right-sized central air systems, installed and warrantied by our own crews.",
+        kicker:"New System Installation", headline:"A cooling system sized right for your home.",
+        sub:"We size and install central air systems using proper load calculations, not guesswork, so your new AC runs efficiently for years.",
+        signs:["Your AC is 12+ years old","Repairs are becoming frequent and costly","Your system uses R-22 refrigerant","Uneven cooling between rooms","Rising energy bills each summer","You're renovating or adding square footage"],
+        included:[{t:"Free In-Home Estimate",d:"We measure your home and walk through system options with transparent pricing."},{t:"Proper Load Calculation",d:"Every system is sized to your home's square footage, insulation, and layout — not the old unit's size."},{t:"Professional Installation",d:"Our crews follow manufacturer specs and local code on every install."},{t:"Warranty Registration",d:"We register your equipment so your full manufacturer coverage is protected."}],
+        process:[{n:"01",t:"Free Home Assessment",d:"We evaluate your ductwork, insulation, and cooling needs on-site."},{n:"02",t:"Choose Your System",d:"We present options across efficiency tiers and budgets, no pressure."},{n:"03",t:"Install & Walkthrough",d:"Most installs finish in a day; we walk you through your new thermostat and system."}],
+        faq:[{q:"How long does installation take?",a:"Most residential AC replacements are completed in a single day, including removal of the old system."},{q:"Do you offer financing?",a:"Yes, we offer financing options on approved credit to help spread out the cost of a new system."},{q:"What efficiency rating should I choose?",a:"We'll compare efficiency ratings against your budget and typical summer usage to find the right balance of upfront cost and long-term savings."}],
+        ctaHeadline:"Let's size your new system right."},
+      {id:"furnace-repair", label:"Furnace & Heating Repair", badge:"FR", short:"Safety-first diagnostics and same-visit fixes for gas, electric, and boiler heat.",
+        kicker:"Furnace Repair, Any Time", headline:"Reliable heat when Joliet winters turn brutal.",
+        sub:"A furnace that won't fire on a 10-degree night isn't just uncomfortable — it's urgent. We diagnose and repair gas, electric, and boiler heating systems fast.",
+        signs:["No heat or the furnace won't turn on","Burner smell or a yellow instead of blue flame","Furnace short-cycling on and off","Loud banging, popping, or rattling at startup","Thermostat calls for heat but nothing happens","Rising gas bills with no change in usage"],
+        included:[{t:"Safety-First Diagnostics",d:"We check for gas leaks, cracked heat exchangers, and carbon monoxide risks before anything else."},{t:"Upfront Repair Pricing",d:"You'll know the cost before we start any work."},{t:"Stocked Service Trucks",d:"Common igniters, sensors, and blower parts are on hand for same-visit fixes."},{t:"Emergency No-Heat Priority",d:"No-heat calls jump to the front of the schedule, even on weekends."}],
+        process:[{n:"01",t:"Describe the Problem",d:"Tell us what you're hearing, smelling, or noticing and we'll prioritize the call."},{n:"02",t:"Safety & System Check",d:"We inspect the heat exchanger, ignition system, and gas lines for safety first."},{n:"03",t:"Repair & Test",d:"We fix the issue and run a full heat cycle before we leave to confirm it's holding."}],
+        faq:[{q:"Is a cracked heat exchanger dangerous?",a:"Yes — it can leak carbon monoxide into your home. We test for this on every furnace call and will shut down an unsafe unit immediately."},{q:"Do you work on boilers too?",a:"Yes, our technicians service gas boilers and hydronic heating systems in addition to forced-air furnaces."},{q:"Can you come out at night?",a:"We hold emergency slots for no-heat calls, including evenings and weekends, during the winter season."}],
+        ctaHeadline:"Don't wait out a cold house."},
+      {id:"heating-install", label:"Heating Installation", badge:"HI", short:"Furnace, heat pump, and dual-fuel systems built for Midwest winters.",
+        kicker:"New Heating System Installation", headline:"Furnace and heat pump installs built for Illinois winters.",
+        sub:"We help you choose between a high-efficiency furnace, heat pump, or dual-fuel system, then install it to handle whatever the Midwest winter brings.",
+        signs:["Your furnace is 15+ years old","You're facing a major repair on an aging system","Some rooms never get warm enough","Your heating bills keep climbing","You're switching from a boiler to forced air","You want a more efficient dual-fuel or heat pump system"],
+        included:[{t:"Free Heating Consultation",d:"We review your current system, ductwork, and comfort complaints before recommending anything."},{t:"Right-Sized Equipment",d:"Furnace and heat pump sizing based on your home's actual heat loss, not rules of thumb."},{t:"Code-Compliant Installation",d:"Venting, gas lines, and electrical work completed to Joliet and Will County code."},{t:"Post-Install Walkthrough",d:"We show you the new thermostat, filter location, and maintenance basics before we leave."}],
+        process:[{n:"01",t:"In-Home Evaluation",d:"We assess your ductwork, insulation, and current heating performance."},{n:"02",t:"Compare Systems",d:"Furnace, heat pump, or dual-fuel — we lay out the tradeoffs in plain terms."},{n:"03",t:"Install & Test",d:"Full installation and a complete heat-cycle test before we call the job done."}],
+        faq:[{q:"Furnace or heat pump — which is better for Joliet winters?",a:"A high-efficiency gas furnace or a dual-fuel system (heat pump plus furnace backup) both perform well in our climate; we'll compare costs based on your home."},{q:"How disruptive is a heating installation?",a:"Most furnace replacements are done in a day. Heat pump or ductwork changes may take longer, which we'll outline upfront."},{q:"Will a new system lower my gas bill?",a:"Older furnaces often run well below the efficiency of new high-efficiency models, which typically shows up in your winter gas bills."}],
+        ctaHeadline:"Let's plan your new heating system."},
+      {id:"duct-cleaning", label:"Air Duct Cleaning", badge:"DC", short:"Clearing years of dust and debris so air actually flows the way it should.",
+        kicker:"Cleaner Air, Better Airflow", headline:"Duct cleaning that clears out years of dust and debris.",
+        sub:"Dust, pet hair, and debris build up in ductwork over time, restricting airflow and circulating allergens through your home. We clean it out and check your system while we're at it.",
+        signs:["Visible dust blowing from vents","Musty or stale odor when the system runs","Increased allergy or dust symptoms indoors","Uneven airflow room to room","Pets in the home or a recent renovation","It's been 3+ years since your last cleaning"],
+        included:[{t:"Full Duct Inspection",d:"We check supply and return lines for buildup, leaks, and disconnected sections."},{t:"High-Powered Vacuum Cleaning",d:"Negative-pressure equipment pulls debris out of the ductwork, not just the visible vents."},{t:"Vent & Register Cleaning",d:"Every supply and return register is cleaned as part of the service."},{t:"Optional Sanitizing Treatment",d:"An antimicrobial treatment is available for homes dealing with mold or odor issues."}],
+        process:[{n:"01",t:"Inspection",d:"We assess your ductwork and identify buildup, leaks, or damage."},{n:"02",t:"Clean the System",d:"Supply lines, return lines, and every register are cleaned thoroughly."},{n:"03",t:"Final Airflow Check",d:"We confirm airflow is restored to each room before wrapping up."}],
+        faq:[{q:"How often should ducts be cleaned?",a:"Most homes benefit from duct cleaning every 3-5 years, sooner if you have pets, allergies, or recently renovated."},{q:"Will duct cleaning lower my energy bill?",a:"Cleaner ducts improve airflow, which can ease strain on your system, though savings vary by home."},{q:"Can you clean ducts and service my furnace in one visit?",a:"Yes, many customers combine duct cleaning with a seasonal furnace or AC tune-up."}],
+        ctaHeadline:"Breathe easier in your own home."},
+      {id:"commercial", label:"Commercial HVAC", badge:"CM", short:"Rooftop units, packaged systems, and maintenance contracts for local businesses.",
+        kicker:"Commercial Heating & Cooling", headline:"Keeping Joliet businesses comfortable, open, and running.",
+        sub:"Rooftop units, packaged systems, and commercial boilers all need a partner who understands downtime costs money. We service offices, retail, restaurants, and light industrial spaces across Will County.",
+        signs:["Rooftop unit short-cycling or icing up","Uneven temperatures across the building","Rising utility costs without added usage","System is past its expected service life","No current maintenance contract in place","Recent tenant buildout requiring new HVAC zoning"],
+        included:[{t:"Preventive Maintenance Contracts",d:"Scheduled inspections that catch problems before they cause closures."},{t:"Rooftop & Packaged Unit Service",d:"Repair and replacement for RTUs, packaged units, and split systems."},{t:"Commercial Installation",d:"New equipment sizing and installation for renovations, buildouts, and new construction."},{t:"After-Hours Emergency Response",d:"Priority response to minimize downtime for your business."}],
+        process:[{n:"01",t:"Site Walkthrough",d:"We assess your current equipment, usage patterns, and pain points."},{n:"02",t:"Proposal & Scheduling",d:"We recommend a service or install plan that works around your business hours."},{n:"03",t:"Service or Install",d:"Work is completed with minimal disruption, often outside business hours."}],
+        faq:[{q:"Do you offer maintenance contracts for businesses?",a:"Yes, we offer scheduled preventive maintenance plans tailored to your equipment and operating hours."},{q:"Can you work outside business hours?",a:"Yes, we regularly schedule commercial installs and major repairs after close to avoid disrupting operations."},{q:"What types of businesses do you serve?",a:"We service offices, retail spaces, restaurants, warehouses, and light industrial facilities throughout Will County."}],
+        ctaHeadline:"Keep your business running."},
+      {id:"water-heaters", label:"Water Heaters", badge:"WH", short:"Tank and tankless repair, replacement, and installation, gas or electric.",
+        kicker:"Water Heater Repair & Installation", headline:"Hot water you can count on, tank or tankless.",
+        sub:"From a leaking tank to a full tankless upgrade, we repair and install gas and electric water heaters so you're never stuck with a cold shower.",
+        signs:["No hot water or it runs out quickly","Rusty or discolored water","Water pooling around the base of the tank","Strange banging or rumbling noises","Water heater is 10+ years old","Considering a switch to tankless"],
+        included:[{t:"Same-Day Repairs",d:"Igniters, thermocouples, and heating elements are stocked for common fixes."},{t:"Tank & Tankless Installation",d:"We install standard tank units and high-efficiency tankless systems."},{t:"Proper Sizing",d:"Sized to your household's actual hot water demand, not guesswork."},{t:"Code-Compliant Venting & Gas Lines",d:"All installs meet local plumbing and gas code."}],
+        process:[{n:"01",t:"Diagnose or Consult",d:"We identify the repair issue or walk through tank vs. tankless options."},{n:"02",t:"Recommend the Right Fit",d:"Sizing based on household size, usage, and fuel type."},{n:"03",t:"Install or Repair",d:"Most jobs are completed same day, with a full system test before we leave."}],
+        faq:[{q:"Is tankless worth the upgrade?",a:"Tankless units provide continuous hot water and take up less space, though the upfront cost is higher than a standard tank."},{q:"How long do water heaters typically last?",a:"Tank water heaters generally last 8-12 years; tankless units can last 15-20 years with proper maintenance."},{q:"Do you install electric water heaters too?",a:"Yes, we install and repair both gas and electric tank and tankless water heaters."}],
+        ctaHeadline:"Never run out of hot water again."},
+      {id:"emergency", label:"Emergency Service", badge:"24/7", short:"On-call technicians, day or night, for the heating and cooling emergencies that can't wait.",
+        kicker:"24/7 Emergency HVAC Service", headline:"No heat. No AC. No waiting.",
+        sub:"HVAC emergencies don't wait for business hours, and neither do we. Our on-call technicians respond around the clock, every day of the year.",
+        signs:["No heat during freezing temperatures","No cooling during extreme summer heat","Gas smell or suspected carbon monoxide leak","Water leaking from your furnace or AC unit","Electrical burning smell from your system","Total system failure with no warning"],
+        included:[{t:"24/7/365 Availability",d:"Nights, weekends, and holidays — our on-call line is always answered."},{t:"Rapid Response",d:"Emergency calls are prioritized and dispatched immediately."},{t:"Fully Stocked Trucks",d:"Our techs carry common parts to resolve emergencies in a single visit whenever possible."},{t:"Transparent Emergency Pricing",d:"You'll know the cost before we start, even after hours."}],
+        process:[{n:"01",t:"Call Now",d:"Reach our 24/7 line directly, no answering service runaround."},{n:"02",t:"Immediate Dispatch",d:"An on-call technician is sent out right away, prioritized by severity."},{n:"03",t:"Fix or Stabilize",d:"We resolve the issue on-site or get your home safely stabilized until a full repair."}],
+        faq:[{q:"Is there an extra charge for after-hours service?",a:"There is an after-hours dispatch fee, which we quote upfront before any work begins."},{q:"What counts as an HVAC emergency?",a:"No heat in freezing weather, no cooling in extreme heat, gas smells, leaks, or electrical issues all qualify as emergencies."},{q:"How fast do you typically respond?",a:"Emergency calls are prioritized ahead of routine scheduling, with most Joliet-area response times under two hours."}],
+        ctaHeadline:"We're already on our way."}
+    ];
+    this.brandDefs = ["Trane","Carrier","Lennox","Rheem","Goodman","American Standard","York","Bryant"];
+    this.townDefs = ["Joliet","Plainfield","Bolingbrook","New Lenox","Shorewood","Crest Hill","Lockport","Romeoville","Channahon","Minooka"];
+    this.testimonialDefs = [
+      {name:"Sarah M.",town:"Plainfield",stars:5,tag:"AC",quote:"Our AC died during the hottest week of July and they had someone out within three hours. Fixed it on the spot and didn't try to sell us a new unit we didn't need."},
+      {name:"Tom R.",town:"Joliet",stars:5,tag:"Heating",quote:"Furnace went out at 11pm in January. They picked up, walked me through keeping the pipes safe, and had a tech out first thing in the morning."},
+      {name:"Denise K.",town:"Shorewood",stars:5,tag:"Installation",quote:"Got quotes from three companies for a new furnace and AC. These guys were the only ones who actually measured the house before recommending a size."},
+      {name:"Marcus B.",town:"Bolingbrook",stars:4,tag:"Maintenance",quote:"Been on their maintenance plan for three years. Two reminder calls a year and it's one less thing to think about."},
+      {name:"Angela P.",town:"New Lenox",stars:5,tag:"Duct Cleaning",quote:"Didn't realize how much dust was in our ducts until they showed us the before and after. Noticeably less dust in the house since."},
+      {name:"Ray D.",town:"Crest Hill",stars:5,tag:"Commercial",quote:"We use them for our restaurant's rooftop units. They work around our hours and haven't left us down during a dinner rush yet."},
+      {name:"Kelly W.",town:"Lockport",stars:5,tag:"Water Heater",quote:"Water heater started leaking on a Saturday morning. Had a new one installed by that afternoon."},
+      {name:"Vince L.",town:"Romeoville",stars:5,tag:"AC",quote:"Honest pricing, showed up on time, explained everything before doing any work. Exactly what you want from a repair company."}
+    ];
+    this.tipDefs = [
+      {category:"Maintenance",title:"Why Your Furnace Filter Matters More Than You Think",excerpt:"A clogged filter forces your furnace to work harder and shortens its lifespan.",body:"A clogged filter restricts airflow, forcing your furnace to work harder and shortening its lifespan. Check it monthly during heating season and replace every 1-3 months depending on filter type and pets in the home."},
+      {category:"Heating",title:"The Right Thermostat Setting for a Joliet Winter",excerpt:"Big swings strain your furnace more than a steady setting does.",body:"Setting your thermostat to 68°F while you're home and a few degrees lower while you're asleep or away balances comfort with efficiency, without the strain of large temperature swings on your furnace."},
+      {category:"Cooling",title:"5 Signs Your AC Needs Attention Before Summer Hits",excerpt:"Weak airflow and warm spots are early warnings worth checking now.",body:"Weak airflow, warm spots in the house, ice on the outdoor unit, unusual noises, and a spike in your electric bill are all early warning signs worth having checked before peak summer heat arrives."},
+      {category:"Maintenance",title:"How Often Should You Really Get a Tune-Up?",excerpt:"Once a year per system catches small issues early.",body:"Most manufacturers recommend a professional tune-up once a year for each system — heating in the fall, cooling in the spring — to catch small issues before they become expensive repairs."},
+      {category:"Air Quality",title:"Indoor Air Quality: What's Actually Circulating Through Your Home",excerpt:"Dust, dander, and allergens all pass through your ductwork.",body:"Dust, pet dander, and seasonal allergens all pass through your ductwork. Regular filter changes, duct cleaning, and proper humidity control all play a role in what you're breathing indoors."},
+      {category:"Water Heaters",title:"Tank vs. Tankless: What Actually Fits Your Household",excerpt:"It comes down to upfront cost versus continuous hot water.",body:"Tankless units save space and provide continuous hot water, but cost more upfront. Larger households with high simultaneous hot water demand sometimes do better with a properly sized tank system."}
+    ];
+    this.valueDefs = [
+      {title:"Honesty",desc:"We tell you what's actually wrong and what it actually costs — before we touch anything."},
+      {title:"Craftsmanship",desc:"Every install and repair is done to the standard we'd want in our own homes."},
+      {title:"Punctuality",desc:"We show up in the window we give you, and we call if anything changes."},
+      {title:"Community",desc:"We're your neighbors in Will County, not a call center three states away."}
+    ];
+    this.timelineDefs = [
+      {year:"1998",text:"Mike Delgado starts the company with one truck and a handful of Joliet customers."},
+      {year:"2007",text:"Add a second crew to keep up with growing demand across Will County."},
+      {year:"2015",text:"Open a dedicated commercial HVAC division for local businesses."},
+      {year:"Today",text:"Still family-run, now serving thousands of homes and businesses year round."}
+    ];
+    this.teamDefs = [
+      {name:"Mike Delgado",role:"Owner & Founder",slotId:"team-mike"},
+      {name:"Renee Delgado",role:"Operations Manager",slotId:"team-renee"},
+      {name:"Carlos Ibarra",role:"Lead Technician, NATE-Certified",slotId:"team-carlos"}
+    ];
+    this.certDefs = ["NATE Certified Technicians","EPA Certified","BBB Accredited Business","Fully Licensed & Insured in Illinois"];
+    this.contactFaqDefs = [
+      {q:"Do you offer financing?",a:"Yes, we offer financing on approved credit for new installations and major repairs."},
+      {q:"Is same-day service available?",a:"In most cases, yes. Call before 2pm for the best chance of same-day scheduling."},
+      {q:"What's your service area?",a:"We serve Joliet and all of Will County, including Plainfield, Bolingbrook, New Lenox, Shorewood, and surrounding towns."},
+      {q:"Do repairs come with a warranty?",a:"All repairs include a 90-day guarantee, and new installations carry full manufacturer warranties."}
+    ];
+    this.hoursDefs = [
+      {day:"Monday – Friday",time:"7:00 AM – 7:00 PM"},
+      {day:"Saturday",time:"8:00 AM – 4:00 PM"},
+      {day:"Sunday",time:"Emergency Only"},
+      {day:"Emergency Line",time:"24/7, Every Day"}
+    ];
+    this.state = {
+      page: "home", mobileOpen: false, servicesOpen: false,
+      bookingOpen: false, bookingDone: false, bookingDoneInline: false,
+      form: { name:"", phone:"", email:"", address:"", service:"", date:"", message:"" },
+      openFaq: null, openContactFaq: null, openTip: null, reviewFilter: "all",
+      statCounts: { years:0, homes:0, homesDisplay:0, rating:"0.0", response:0 }
+    };
+    this._statsAnimated = false;
+    this.statsRef = this.statsRef.bind(this);
+    this.state.isMobile = typeof window !== 'undefined' ? window.innerWidth < 880 : false;
+    this.handleResize = this.handleResize.bind(this);
+  }
+
+  componentDidMount() { this.updateSEO(); window.addEventListener('resize', this.handleResize); }
+  componentWillUnmount() { window.removeEventListener('resize', this.handleResize); if (this._observer) this._observer.disconnect(); }
+  handleResize() {
+    const isMobile = window.innerWidth < 880;
+    if (isMobile !== this.state.isMobile) this.setState({ isMobile });
+  }
+  componentDidUpdate(prev, prevState) { if (prevState.page !== this.state.page) this.updateSEO(); }
+
+  updateSEO() {
+    const svc = this.serviceDefs.find(s => s.id === this.state.page);
+    let title, desc;
+    if (svc) { title = svc.label + " in Joliet, IL | Year Round Heating and Air Conditioning"; desc = svc.sub; }
+    else {
+      const map = {
+        home: ["Year Round Heating and Air Conditioning | Joliet, IL HVAC", "Family-owned heating and cooling company serving Joliet and Will County since 1998. Repair, installation, and 24/7 emergency service."],
+        about: ["About Us | Year Round Heating and Air Conditioning", "Family-owned HVAC company serving Joliet, IL since 1998."],
+        reviews: ["Customer Reviews | Year Round Heating and Air Conditioning", "See what Will County homeowners say about our heating and cooling service."],
+        tips: ["HVAC Tips & Seasonal Advice | Year Round Heating and Air Conditioning", "Practical heating and cooling tips from our Joliet-based technicians."],
+        contact: ["Contact Us | Year Round Heating and Air Conditioning", "Schedule HVAC service in Joliet, IL. Call (815) 555-0142 or request service online."]
+      };
+      [title, desc] = map[this.state.page] || map.home;
+    }
+    document.title = title;
+    let m = document.querySelector('meta[name="description"]');
+    if (!m) { m = document.createElement('meta'); m.setAttribute('name','description'); document.head.appendChild(m); }
+    m.setAttribute('content', desc);
+  }
+
+  navigate(id) { this.setState({ page: id, mobileOpen: false, servicesOpen: false, openFaq: null, openTip: null }); window.scrollTo(0,0); }
+  statsRef(node) {
+    if (!node || this._observer) return;
+    this._observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting && !this._statsAnimated) { this._statsAnimated = true; this.animateStats(); } });
+    }, { threshold: 0.3 });
+    this._observer.observe(node);
+  }
+  animateStats() {
+    const animated = this.props.statsAnimated ?? true;
+    const targets = { years: 27, homes: 12000, rating: 4.9, response: 2 };
+    if (!animated) { this.setState({ statCounts: { years:targets.years, homes:targets.homes, homesDisplay:targets.homes.toLocaleString(), rating:targets.rating.toFixed(1), response:targets.response } }); return; }
+    const duration = 1300, start = performance.now();
+    const step = (t) => {
+      const p = Math.min((t - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      const homes = Math.round(targets.homes * ease);
+      this.setState({ statCounts: {
+        years: Math.round(targets.years * ease),
+        homes, homesDisplay: homes.toLocaleString(),
+        rating: (targets.rating * ease).toFixed(1),
+        response: Math.max(1, Math.round(targets.response * ease))
+      }});
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  renderVals() {
+    const page = this.state.page;
+    const isService = this.serviceDefs.some(s => s.id === page);
+    const svcRaw = this.serviceDefs.find(s => s.id === page);
+
+    const services = this.serviceDefs.map((s, i) => ({
+      id: s.id, label: s.label, badge: s.badge, short: s.short, delay: (i * 0.06).toFixed(2),
+      go: () => this.navigate(s.id)
+    }));
+
+    const brandsWith = (arr) => arr.map((n, i) => ({ name: n, delay: (i * 0.05).toFixed(2) }));
+    const brands = brandsWith(this.brandDefs);
+    const brandsDoubled = brandsWith(this.brandDefs.concat(this.brandDefs));
+
+    const navColor = (id) => page === id ? "#b7202f" : "#fff";
+    const navColors = { home: navColor("home"), service: isService || this.state.servicesOpen ? "#b7202f" : "#fff", about: navColor("about"), reviews: navColor("reviews"), tips: navColor("tips"), contact: navColor("contact") };
+
+    let currentService = null;
+    if (svcRaw) {
+      currentService = {
+        label: svcRaw.label, kicker: svcRaw.kicker, headline: svcRaw.headline, sub: svcRaw.sub, ctaHeadline: svcRaw.ctaHeadline,
+        signs: svcRaw.signs.map((text, i) => ({ text, delay: (i * 0.05).toFixed(2) })),
+        included: svcRaw.included.map((inc, i) => ({ ...inc, delay: (i * 0.06).toFixed(2) })),
+        process: svcRaw.process,
+        faq: svcRaw.faq.map((f, i) => ({
+          q: f.q, a: f.a, isOpen: this.state.openFaq === i, symbol: this.state.openFaq === i ? "\u2212" : "+",
+          toggle: () => this.setState({ openFaq: this.state.openFaq === i ? null : i })
+        }))
+      };
+    }
+
+    const filterTagMap = { all: null, ac: "AC", heating: "Heating", installation: "Installation", maintenance: "Maintenance", commercial: "Commercial" };
+    const reviewFilterDefs = [
+      { id: "all", label: "All Reviews" }, { id: "ac", label: "AC" }, { id: "heating", label: "Heating" },
+      { id: "installation", label: "Installation" }, { id: "maintenance", label: "Maintenance" }, { id: "commercial", label: "Commercial" }
+    ];
+    const reviewFilters = reviewFilterDefs.map(rf => ({
+      id: rf.id, label: rf.label, active: this.state.reviewFilter === rf.id,
+      bg: this.state.reviewFilter === rf.id ? "#b7202f" : "#fff",
+      color: this.state.reviewFilter === rf.id ? "#fff" : "#1b2a4a",
+      borderColor: this.state.reviewFilter === rf.id ? "#b7202f" : "#e3e0d8",
+      select: () => this.setState({ reviewFilter: rf.id })
+    }));
+    const activeTag = filterTagMap[this.state.reviewFilter];
+    const allTestimonials = this.testimonialDefs.map((t, i) => ({ ...t, stars: "\u2605".repeat(t.stars) + "\u2606".repeat(5 - t.stars), delay: (i * 0.05).toFixed(2) }));
+    const filteredTestimonials = activeTag ? allTestimonials.filter(t => t.tag === activeTag) : allTestimonials;
+
+    const tips = this.tipDefs.map((t, i) => ({
+      ...t, delay: (i * 0.06).toFixed(2), isOpen: this.state.openTip === i, isClosed: this.state.openTip !== i,
+      toggleLabel: this.state.openTip === i ? "Show less" : "Read more",
+      toggle: () => this.setState({ openTip: this.state.openTip === i ? null : i })
+    }));
+
+    const contactFaq = this.contactFaqDefs.map((f, i) => ({
+      q: f.q, a: f.a, isOpen: this.state.openContactFaq === i, symbol: this.state.openContactFaq === i ? "\u2212" : "+",
+      toggle: () => this.setState({ openContactFaq: this.state.openContactFaq === i ? null : i })
+    }));
+
+    return {
+      page, isHome: page === "home", isAbout: page === "about", isReviews: page === "reviews", isTips: page === "tips", isContact: page === "contact", isService,
+      emergencyEnabled: this.props.emergencyBarEnabled ?? true,
+      navColors, servicesOpen: this.state.servicesOpen, servicesArrow: this.state.servicesOpen ? "rotate(180deg)" : "rotate(0deg)",
+      showDesktopNav: !this.state.isMobile, showMobileToggle: this.state.isMobile,
+      mobileOpen: this.state.mobileOpen, bookingOpen: this.state.bookingOpen, bookingDone: this.state.bookingDone,
+      bookingDoneInline: page === "contact" && this.state.bookingDoneInline,
+      bookingFormVisible: !this.state.bookingDone, bookingFormVisibleInline: page === "contact" && !this.state.bookingDoneInline,
+      services, brands, brandsDoubled, towns: this.townDefs, currentService,
+      trustBadges: [{label:"Licensed & Insured"},{label:"Family-Owned Since 1998"},{label:"NATE-Certified Techs"},{label:"Same-Day Service"}],
+      statsRef: this.statsRef, statCounts: this.state.statCounts,
+      homeTestimonials: allTestimonials.slice(0, 4), homeTips: tips.slice(0, 3),
+      reviewFilters, filteredTestimonials, tips, contactFaq,
+      values: this.valueDefs.map((v, i) => ({ ...v, delay: (i * 0.06).toFixed(2) })),
+      timeline: this.timelineDefs.map((t, i) => ({ ...t, delay: (i * 0.06).toFixed(2) })),
+      team: this.teamDefs, certs: this.certDefs, hoursLines: this.hoursDefs,
+      form: this.state.form,
+      setName: (e) => this.setState({ form: { ...this.state.form, name: e.target.value } }),
+      setPhone: (e) => this.setState({ form: { ...this.state.form, phone: e.target.value } }),
+      setEmail: (e) => this.setState({ form: { ...this.state.form, email: e.target.value } }),
+      setAddress: (e) => this.setState({ form: { ...this.state.form, address: e.target.value } }),
+      setService: (e) => this.setState({ form: { ...this.state.form, service: e.target.value } }),
+      setDate: (e) => this.setState({ form: { ...this.state.form, date: e.target.value } }),
+      setMessage: (e) => this.setState({ form: { ...this.state.form, message: e.target.value } }),
+      submitForm: (e) => { if (e && e.preventDefault) e.preventDefault(); if (page === "contact") this.setState({ bookingDoneInline: true }); else this.setState({ bookingDone: true }); },
+      openBooking: () => this.setState({ bookingOpen: true, bookingDone: false }),
+      closeBooking: () => this.setState({ bookingOpen: false }),
+      closeBookingBackdrop: () => this.setState({ bookingOpen: false }),
+      stopClick: (e) => e.stopPropagation(),
+      goHome: () => this.navigate("home"), goAbout: () => this.navigate("about"),
+      goReviews: () => this.navigate("reviews"), goTips: () => this.navigate("tips"), goContact: () => this.navigate("contact"),
+      toggleServicesOpen: () => this.setState({ servicesOpen: !this.state.servicesOpen }),
+      toggleMobile: () => this.setState({ mobileOpen: !this.state.mobileOpen }),
+      year: 2026
+    };
+  }
+}
+
+</script>
+</body>
+</html>

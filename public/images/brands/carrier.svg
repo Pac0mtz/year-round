@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 72" role="img" aria-label="Carrier">
+  <ellipse cx="120" cy="36" rx="110" ry="30" fill="none" stroke="#002d72" stroke-width="3.5"/>
+  <text x="120" y="44" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="28" font-style="italic" font-weight="700" fill="#002d72">Carrier</text>
+</svg>

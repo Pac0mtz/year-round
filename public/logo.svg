@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" fill="none" role="img" aria-label="Year Round Heating & Air Conditioning">
+  <rect width="280" height="64" rx="0" fill="none"/>
+  <!-- Mark -->
+  <circle cx="32" cy="32" r="30" fill="#1b2a4a"/>
+  <circle cx="32" cy="32" r="30" stroke="#b7202f" stroke-width="3"/>
+  <!-- Snowflake (cool) -->
+  <g stroke="#7eb8e8" stroke-width="2" stroke-linecap="round">
+    <path d="M22 22l-4-4M22 22l4-4M22 22v-6M22 22h-6"/>
+    <path d="M18 26l-3 0M18 26l0-3"/>
+  </g>
+  <!-- Flame (heat) -->
+  <path d="M40 42c0-6 4-9 4-14 3 3 6 7 6 12 0 5-3 8-6 8s-4-3-4-6z" fill="#b7202f"/>
+  <path d="M42 40c0-3 1.5-5 1.5-7 1.5 1.5 3 3.5 3 6 0 2.5-1.2 4-2.5 4S42 41.5 42 40z" fill="#ff8d97"/>
+  <!-- Wordmark -->
+  <text x="72" y="30" fill="#ffffff" font-family="Arial Black, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="1.5">YEAR ROUND</text>
+  <text x="72" y="48" fill="#e8b3ba" font-family="Arial, sans-serif" font-size="9" font-weight="600" letter-spacing="2.2">HEATING &amp; AIR CONDITIONING</text>
+</svg>
